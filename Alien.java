@@ -1,17 +1,17 @@
 package brainstorm;
 
-public class Human extends Enemy
+public class Alien extends Enemy
 {
-   public Human(int level) {
+   public Alien(int level) {
        super(level);
-       maxHealth = 10 + level;
+       maxHealth = 20 + level;
        defence = 8 + level;
        attack = 12 + level;
-       speed = 12 + level;
+       speed = 8 + level;
        cHealth = maxHealth;
     }
 
     public String toString() {
-	return "Human" + "\n" + "Health: " + cHealth + "\n";
+	return "Alien" + "\n" + "Health: " + cHealth + "\n";
     }
 }

@@ -2,21 +2,61 @@ package brainstorm;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class ArenaFrame extends JFrame
 {
-    public ArenaFrame(final Arena aa) {
+    private final ArenaComponent arenaComponent;
 
-	final ArenaComponent arena = new ArenaComponent(aa);
-	this.add(arena, BorderLayout.CENTER);
+    public ArenaFrame(final Arena arena) {
 
-	JButton fight = new JButton("FIGHT!");
-	this.add(fight, BorderLayout.LINE_END);
+	JPanel contentPane = new JPanel(new BorderLayout());
+	this.add(contentPane);
+	arenaComponent = new ArenaComponent(arena);
+	contentPane.add(arenaComponent, BorderLayout.CENTER);
 
-	JButton flee = new JButton("FLIGHT!");
+
+	arena.addListener(arenaComponent);
+
+
+	class FleeAction extends AbstractAction {
+	    @Override public void actionPerformed(final ActionEvent e) {
+		arena.flee();
+	    }
+	}
+
+	JButton flee = new JButton(new FleeAction());
+	flee.setText("FLIGHT!");
 	this.add(flee, BorderLayout.LINE_START);
+
+
+	class FightAction extends AbstractAction {
+	    @Override public void actionPerformed(final ActionEvent e) {
+		arena.fight();
+	    }
+	}
+
+	JButton fight = new JButton(new FightAction());
+	fight.setText("FIGHT!");
+	this.add(fight, BorderLayout.LINE_END);
 
 	this.pack();
 	this.setLocationRelativeTo(null);
+
+	class QuitAction extends AbstractAction {
+	    @Override public void actionPerformed(final ActionEvent e) {
+			System.exit(0);
+		    }
+	}
+
+
+	final InputMap in = arenaComponent.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+	in.put(KeyStroke.getKeyStroke("ESCAPE"), "quit");
+	final ActionMap act = arenaComponent.getActionMap();
+	act.put("quit", new QuitAction());
+    }
+
+    public ArenaComponent getArenaComponent() {
+	return arenaComponent;
     }
 }

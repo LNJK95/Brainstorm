@@ -14,7 +14,7 @@ public class GameFrame extends JFrame
 
     public GameFrame() {
 	map = new Map(15, 20, player);
-	arena = new Arena(player, new Human(1));
+	arena = new Arena(player);
 	mapFrame = new MapFrame(map);
 	arenaFrame = new ArenaFrame(arena);
 	//mapFrame.setVisible(true);
@@ -29,7 +29,18 @@ public class GameFrame extends JFrame
 		    mapFrame.toFront();
 		}
 		else if (player.getState() == "arena") {
+		    if (arena.isWin()) {
+			map.defeatedEnemy(map.getCollidedEnemy());
+			arena.win();
+		    }
+		    if (arena.isDeath()) {
+			map.resetMap();
+			arena.lose();
+		    }
 		    mapFrame.setVisible(false);
+		    if (map.getCollidedEnemy() != null) {
+			arena.setEnemy(map.getCollidedEnemy());
+		    }
 		    arenaFrame.setVisible(true);
 		    arenaFrame.toFront();
 		}

@@ -13,7 +13,10 @@ public class Map
     private int playerX;
     private int playerY;
 
-    private List<MapListener> mapListeners = new ArrayList<MapListener>();
+    private Enemy collidedEnemy;
+    //private Enemy enemyType;
+
+    private List<GameListener> gameListeners = new ArrayList<GameListener>();
     private List<Enemy> enemies = new ArrayList<Enemy>(5);
 
     public Map(final int height, final int width, final Player player) {
@@ -35,22 +38,98 @@ public class Map
 		}
 	    }
 	}
-	for (int i = 0; i < 5; i++) {
+	//for (int i = 0; i < 5; i++) {
+	    randomEnemy();
+	//}
+    }
+
+    public void resetMap() {
+	enemies.clear();
+	randomEnemy();
+    }
+
+    public void randomEnemy() {
+	while (enemies.size() < 5) {
 	    Random rnd = new Random();
-	    Enemy enemy = new Human(rnd.nextInt(10));
-	    enemy.setCoords(i,i );
+	    int enemyLevel = rnd.nextInt(player.getLevel())+1;
+	    Enemy enemy = createEnemy(enemyLevel);
+	    //new Human(rnd.nextInt(player.getLevel())+1);
+	    enemy.setCoords(rnd.nextInt(height), rnd.nextInt(width));
+	    checkEnemy(enemy);
 	    enemies.add(enemy);
 	}
     }
 
-    private void notifyListeners() {
-	for (MapListener ml : mapListeners) {
-	    ml.mapChanged();
+    public void checkEnemy(Enemy enemy){
+	System.out.println("checks enemy coords");
+	for (Enemy e : enemies) {
+	    if (e.getEnemyX() == enemy.getEnemyX() && e.getEnemyY() == enemy.getEnemyY()) {
+		System.out.println("already enemy");
+		newRandomCoords(enemy);
+	    }
+	}
+	if (getSquareType(enemy.getEnemyY(), enemy.getEnemyX()) != SquareType.GRASS) {
+	    newRandomCoords(enemy);
+	    System.out.println("not grass");
+	}
+	if (enemy.getEnemyX() == playerX && enemy.getEnemyY() == playerY) {
+	    newRandomCoords(enemy);
+	    System.out.println("thats player dang it");
 	}
     }
 
-    public void addListener(MapListener ml) {
-	mapListeners.add(ml);
+    public void newRandomCoords(Enemy enemy) {
+	System.out.println("new enemy coords");
+	Random rnd = new Random();
+	enemy.setCoords(rnd.nextInt(height), rnd.nextInt(width));
+	checkEnemy(enemy);
+    }
+
+    public void defeatedEnemy(Enemy enemy) {
+	enemies.remove(enemy);
+	randomEnemy();
+	//remove enemy (collidedEnemy) from enemies
+    }
+
+    public Enemy createEnemy(int enemyLevel) {
+	Enemy enemyType;
+	switch(player.getLevel()) {
+	    case 1:
+	    case 2:
+		enemyType = new Human(enemyLevel);
+		break;
+	    case 3:
+	    case 4:
+		enemyType = new Vampire(enemyLevel);
+		break;
+	    case 5:
+	    case 6:
+		enemyType = new Werewolf(enemyLevel);
+		break;
+	    case 7:
+	    case 8:
+		enemyType = new Mermaid(enemyLevel);
+		break;
+	    case 9:
+	    case 10:
+		enemyType = new Alien(enemyLevel);
+		break;
+	    default:
+		enemyType = new Human(enemyLevel);
+	}
+	return enemyType;
+    }
+
+    /* newMap() som gör om kartan in case of emergency lmao*/
+
+    private void notifyListeners() {
+	for (GameListener ml : gameListeners) {
+	    ml.hasChanged();
+	}
+    }
+
+    public void addListener(GameListener ml) {
+	gameListeners.add(ml);
     }
 
     public void moveDown() {
@@ -92,7 +171,9 @@ public class Map
 	}
 	for (Enemy enemy : enemies) {
 	    if (enemy.getEnemyY() == playerY && enemy.getEnemyX() == playerX) {
+		boo = true;
 		player.setState("arena");
+		collidedEnemy = enemy;
 	    }
 	}
 	return boo;
@@ -120,5 +201,9 @@ public class Map
 
     public List<Enemy> getEnemies() {
 	return enemies;
+    }
+
+    public Enemy getCollidedEnemy() {
+	return collidedEnemy;
     }
 }

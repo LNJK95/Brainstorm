@@ -2,26 +2,28 @@ package brainstorm;
 
 public abstract class Enemy
 {
-    private int health;
-    private int speed;
-    private int level;
-    private int defence;
-    private int attack;
-    private int enemyY;
-    private int enemyX;
-    private int givesXp;
+    protected int maxHealth;
+    protected int cHealth;
+    protected int speed;
+    protected int level;
+    protected int defence;
+    protected int attack;
+    protected int enemyY;
+    protected int enemyX;
+    protected int givesXp;
 
     public Enemy(int level) {
 	this.level = level;
-	health = 10;
-	speed = 10;
-	defence = 10;
-	attack = 10;
-	givesXp = level;
+	givesXp = level*level;
+    }
+
+
+    public void setHealth(final int cHealth) {
+	this.cHealth = cHealth;
     }
 
     public int getHealth() {
-	return health;
+	return cHealth;
     }
 
     public int getSpeed() {
@@ -55,5 +57,9 @@ public abstract class Enemy
     public void setCoords(int y, int x) {
 	this.enemyY = y;
 	this.enemyX = x;
+    }
+
+    public int getGivesXp() {
+	return givesXp;
     }
 }

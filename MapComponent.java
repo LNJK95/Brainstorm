@@ -3,7 +3,7 @@ package brainstorm;
 import javax.swing.*;
 import java.awt.*;
 
-public class MapComponent extends JComponent implements MapListener
+public class MapComponent extends JComponent implements GameListener
 {
     private Map map;
     private final static int SQUARE_SIZE = 30;
@@ -62,7 +62,7 @@ public class MapComponent extends JComponent implements MapListener
 	}
     }
 
-    public void mapChanged() {
+    public void hasChanged() {
 	repaint();
     }
 }

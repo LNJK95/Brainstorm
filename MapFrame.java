@@ -10,9 +10,13 @@ public class MapFrame extends JFrame
 	super("Brainstorm");
 
 	final MapComponent mapComponent = new MapComponent(map);
+	JPanel contentPane = new JPanel(new BorderLayout());
+	this.add(contentPane);
 
-	this.setLayout(new BorderLayout());
-	this.add(mapComponent, BorderLayout.CENTER);
+	//this.setLayout(new BorderLayout());
+	BackpackComponent backpackComponent = new BackpackComponent();
+	contentPane.add(mapComponent, BorderLayout.LINE_START);
+	contentPane.add(backpackComponent, BorderLayout.LINE_END);
 
 	map.addListener(mapComponent);
 
