@@ -13,18 +13,28 @@ public class Map
     private int playerX;
     private int playerY;
 
+    private int gearX;
+    private int gearY;
+    private Gear gear;
+
+    private Backpack backpack;
+
     private Enemy collidedEnemy;
     //private Enemy enemyType;
 
     private List<GameListener> gameListeners = new ArrayList<GameListener>();
     private List<Enemy> enemies = new ArrayList<Enemy>(5);
 
-    public Map(final int height, final int width, final Player player) {
+    public Map(final int height, final int width, final Player player, final Backpack backpack) {
+	this.backpack = backpack;
 	this.player = player;
 	this.height = height;
 	this.width = width;
 	playerX = width/2-BORDER;
 	playerY = height/2-BORDER;
+	gearX = playerX +1;
+	gearY = playerY +1;
+	gear = Gear.PIZZA_SLICER;
 
 	mapSquares = new SquareType[height + BORDER*2][width + BORDER*2];
 
@@ -38,9 +48,7 @@ public class Map
 		}
 	    }
 	}
-	//for (int i = 0; i < 5; i++) {
-	    randomEnemy();
-	//}
+	randomEnemy();
     }
 
     public void resetMap() {
@@ -176,8 +184,13 @@ public class Map
 		collidedEnemy = enemy;
 	    }
 	}
+	if (playerX == gearX && playerY == gearY) {
+	    backpack.addToBackpack(gear);
+	    notifyListeners();
+	}
 	return boo;
     }
+
 
     public SquareType getSquareType(int y, int x) {
 	return mapSquares[BORDER+y][BORDER+x];
@@ -206,4 +219,14 @@ public class Map
     public Enemy getCollidedEnemy() {
 	return collidedEnemy;
     }
+
+    public int getGearX() {
+	return gearX;
+    }
+
+    public int getGearY() {
+	return gearY;
+    }
 }
+
+

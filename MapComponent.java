@@ -45,6 +45,13 @@ public class MapComponent extends JComponent implements GameListener
 	    g2d.setPaint(Color.RED);
 	    g2d.fill(thisEnemy);
 	}
+
+	Shape gear = new Rectangle(map.getGearX()*SQUARE_SIZE + map.getGearX()*MARGIN,
+				   map.getGearY()*SQUARE_SIZE + map.getGearY()*MARGIN,
+				   SQUARE_SIZE, SQUARE_SIZE);
+	g2d.setPaint(Color.PINK);
+	g2d.fill(gear);
+
     }
 
     public Dimension getPreferredSize() {

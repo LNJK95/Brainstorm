@@ -11,12 +11,16 @@ public class GameFrame extends JFrame
     private Arena arena;
     private final Player player = new Player();
     private final Timer clockTimer;
+    private final Backpack backpack;
+
 
     public GameFrame() {
-	map = new Map(15, 20, player);
+	backpack = new Backpack();
+	map = new Map(15, 20, player, backpack);
 	arena = new Arena(player);
-	mapFrame = new MapFrame(map);
-	arenaFrame = new ArenaFrame(arena);
+	mapFrame = new MapFrame(map, backpack);
+	arenaFrame = new ArenaFrame(arena, backpack);
+
 	//mapFrame.setVisible(true);
 	//arenaFrame.setVisible(true);
 	//mapFrame.toFront();
@@ -30,12 +34,14 @@ public class GameFrame extends JFrame
 		}
 		else if (player.getState() == "arena") {
 		    if (arena.isWin()) {
+			backpack.loot();
 			map.defeatedEnemy(map.getCollidedEnemy());
 			arena.win();
 		    }
 		    if (arena.isDeath()) {
 			map.resetMap();
 			arena.lose();
+			backpack.resetBackpack();
 		    }
 		    mapFrame.setVisible(false);
 		    if (map.getCollidedEnemy() != null) {

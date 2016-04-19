@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 
 public class MapFrame extends JFrame
 {
-    public MapFrame(final Map map) {
+    public MapFrame(final Map map, final Backpack backpack) {
 	super("Brainstorm");
 
 	final MapComponent mapComponent = new MapComponent(map);
@@ -14,11 +14,12 @@ public class MapFrame extends JFrame
 	this.add(contentPane);
 
 	//this.setLayout(new BorderLayout());
-	BackpackComponent backpackComponent = new BackpackComponent();
+	BackpackComponent backpackComponent = new BackpackComponent(backpack);
 	contentPane.add(mapComponent, BorderLayout.LINE_START);
 	contentPane.add(backpackComponent, BorderLayout.LINE_END);
 
 	map.addListener(mapComponent);
+	backpack.addListener(backpackComponent);
 
 	//this.setVisible(true);
 	this.pack();

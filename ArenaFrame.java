@@ -8,7 +8,7 @@ public class ArenaFrame extends JFrame
 {
     private final ArenaComponent arenaComponent;
 
-    public ArenaFrame(final Arena arena) {
+    public ArenaFrame(final Arena arena, final Backpack backpack) {
 
 	JPanel contentPane = new JPanel(new BorderLayout());
 	this.add(contentPane);
@@ -17,6 +17,10 @@ public class ArenaFrame extends JFrame
 
 
 	arena.addListener(arenaComponent);
+	BackpackComponent backpackComponent = new BackpackComponent(backpack);
+	contentPane.add(backpackComponent, BorderLayout.LINE_END);
+	backpack.addListener(backpackComponent);
+
 
 
 	class FleeAction extends AbstractAction {
