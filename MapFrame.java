@@ -1,22 +1,34 @@
 package brainstorm;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class MapFrame extends JFrame
 {
+
+    private static final int SQUARE_SIZE = 20;
+    private static final int MARGIN = 2;
+
     public MapFrame(final Map map, final Backpack backpack) {
 	super("Brainstorm");
 
 	final MapComponent mapComponent = new MapComponent(map);
 	JPanel contentPane = new JPanel(new BorderLayout());
-	this.add(contentPane);
+	JPanel backpackPane = new JPanel(new BorderLayout());
+
+	JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, contentPane, backpackPane);
+	this.add(splitPane);
 
 	//this.setLayout(new BorderLayout());
 	BackpackComponent backpackComponent = new BackpackComponent(backpack);
 	contentPane.add(mapComponent, BorderLayout.LINE_START);
-	contentPane.add(backpackComponent, BorderLayout.LINE_END);
+	backpackPane.add(backpackComponent, BorderLayout.PAGE_START);
+
+	backpackComponent.addMouseListener(new BackpackClicker());
 
 	map.addListener(mapComponent);
 	backpack.addListener(backpackComponent);
@@ -67,5 +79,15 @@ public class MapFrame extends JFrame
 	act.put("moveRight", new RightAction());
 	act.put("moveLeft", new LeftAction());
 	act.put("quit", new QuitAction());
+    }
+
+    private class BackpackClicker implements MouseListener {
+	public void mouseClicked (MouseEvent e) {
+    	    System.out.println("HEY THERE");
+    	}
+    	public void mousePressed(MouseEvent e) {}
+    	public void mouseEntered(MouseEvent e){}
+    	public void mouseReleased(MouseEvent e) {}
+    	public void mouseExited(MouseEvent e) {}
     }
 }

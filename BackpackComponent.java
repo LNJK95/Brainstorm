@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class BackpackComponent extends JComponent implements GameListener
 {
-    private static final int SQUARE_SIZE = 20;
+    private static final int SQUARE_SIZE = 30;
     private static final int MARGIN = 2;
 
     private Backpack backpack;
