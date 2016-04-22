@@ -12,7 +12,7 @@ public class GameFrame extends JFrame
     private final Player player = new Player();
     private final Timer clockTimer;
     private final Backpack backpack;
-
+    private String state;
 
     public GameFrame() {
 	backpack = new Backpack();
@@ -20,6 +20,7 @@ public class GameFrame extends JFrame
 	arena = new Arena(player);
 	mapFrame = new MapFrame(map, backpack);
 	arenaFrame = new ArenaFrame(arena, backpack);
+	state = "map";
 
 	//mapFrame.setVisible(true);
 	//arenaFrame.setVisible(true);
@@ -27,12 +28,22 @@ public class GameFrame extends JFrame
 
 	final Action doOneStep = new AbstractAction() {
 	    public void actionPerformed(ActionEvent e) {
-		if (player.getState() == "map") {
+		if (player.getState() == "map" && state != "map") {
 		    arenaFrame.setVisible(false);
 		    mapFrame.setVisible(true);
-		    mapFrame.toFront();
+		    state = "map";
+		    //mapFrame.toFront();
 		}
-		else if (player.getState() == "arena") {
+		else if (player.getState() == "arena" && state != "arena") {
+		    mapFrame.setVisible(false);
+		    state = "arena";
+		    if (map.getCollidedEnemy() != null) {
+			arena.setEnemy(map.getCollidedEnemy());
+		    }
+		    arenaFrame.setVisible(true);
+		    //arenaFrame.toFront();
+		}
+		else if (player.getState() == "arena" && state == "arena") {
 		    if (arena.isWin()) {
 			backpack.loot();
 			map.defeatedEnemy(map.getCollidedEnemy());
@@ -43,15 +54,11 @@ public class GameFrame extends JFrame
 			arena.lose();
 			backpack.resetBackpack();
 		    }
-		    mapFrame.setVisible(false);
-		    if (map.getCollidedEnemy() != null) {
-			arena.setEnemy(map.getCollidedEnemy());
-		    }
-		    arenaFrame.setVisible(true);
-		    arenaFrame.toFront();
 		}
 	    }
 	};
+
+	mapFrame.setVisible(true);
 
 	clockTimer = new Timer(500, doOneStep);
 	startTimer();

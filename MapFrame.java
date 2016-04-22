@@ -28,6 +28,13 @@ public class MapFrame extends JFrame
 	contentPane.add(mapComponent, BorderLayout.LINE_START);
 	backpackPane.add(backpackComponent, BorderLayout.PAGE_START);
 
+	contentPane.setMinimumSize(contentPane.getPreferredSize());
+	contentPane.setMaximumSize(contentPane.getPreferredSize());
+
+	backpackPane.setMinimumSize(backpackPane.getPreferredSize());
+	backpackPane.setMaximumSize(backpackPane.getPreferredSize());
+
+
 	backpackComponent.addMouseListener(new BackpackClicker());
 
 	map.addListener(mapComponent);
@@ -35,6 +42,7 @@ public class MapFrame extends JFrame
 
 	//this.setVisible(true);
 	this.pack();
+	this.setResizable(false);
 	this.setLocationRelativeTo(null);
 
 	class DownAction extends AbstractAction {
@@ -84,6 +92,10 @@ public class MapFrame extends JFrame
     private class BackpackClicker implements MouseListener {
 	public void mouseClicked (MouseEvent e) {
     	    System.out.println("HEY THERE");
+	    JFrame ayy = new JFrame("ayy lmao");
+	    ayy.setVisible(true);
+	    ayy.toFront();
+	    ayy.setLocationRelativeTo(null);
     	}
     	public void mousePressed(MouseEvent e) {}
     	public void mouseEntered(MouseEvent e){}
