@@ -25,6 +25,8 @@ public class Map
     private List<GameListener> gameListeners = new ArrayList<GameListener>();
     private List<Enemy> enemies = new ArrayList<Enemy>(5);
 
+    Random rnd = new Random();
+
     public Map(final int height, final int width, final Player player, final Backpack backpack) {
 	this.backpack = backpack;
 	this.player = player;
@@ -32,9 +34,7 @@ public class Map
 	this.width = width;
 	playerX = width/2-BORDER;
 	playerY = height/2-BORDER;
-	gearX = playerX +1;
-	gearY = playerY +1;
-	gear = Gear.PIZZA_SLICER;
+	gear = Gear.values()[rnd.nextInt(Gear.values().length)];
 
 	mapSquares = new SquareType[height + BORDER*2][width + BORDER*2];
 
@@ -48,6 +48,7 @@ public class Map
 		}
 	    }
 	}
+	randomGearCoords();
 	randomEnemy();
     }
 
@@ -58,7 +59,6 @@ public class Map
 
     public void randomEnemy() {
 	while (enemies.size() < 5) {
-	    Random rnd = new Random();
 	    int enemyLevel = rnd.nextInt(player.getLevel())+1;
 	    Enemy enemy = createEnemy(enemyLevel);
 	    //new Human(rnd.nextInt(player.getLevel())+1);
@@ -88,7 +88,6 @@ public class Map
 
     public void newRandomCoords(Enemy enemy) {
 	System.out.println("new enemy coords");
-	Random rnd = new Random();
 	enemy.setCoords(rnd.nextInt(height), rnd.nextInt(width));
 	checkEnemy(enemy);
     }
@@ -186,11 +185,12 @@ public class Map
 	}
 	if (playerX == gearX && playerY == gearY) {
 	    backpack.addToBackpack(gear);
+	    gear = Gear.values()[rnd.nextInt(Gear.values().length)];
+	    randomGearCoords();
 	    notifyListeners();
 	}
 	return boo;
     }
-
 
     public SquareType getSquareType(int y, int x) {
 	return mapSquares[BORDER+y][BORDER+x];
@@ -226,6 +226,23 @@ public class Map
 
     public int getGearY() {
 	return gearY;
+    }
+
+    public void randomGearCoords() {
+	gearX = rnd.nextInt(width);
+	gearY = rnd.nextInt(height);
+
+	for (Enemy e : enemies) {
+	    if (e.getEnemyX() == gearX && e.getEnemyY() == gearY) {
+		randomGearCoords();
+	    }
+	}
+	if (getSquareType(gearY, gearX) != SquareType.GRASS) {
+	    randomGearCoords();
+	}
+	if (gearX == playerX && gearY == playerY) {
+	    randomGearCoords();
+	}
     }
 }
 

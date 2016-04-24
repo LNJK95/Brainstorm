@@ -12,9 +12,13 @@ public class MapFrame extends JFrame
 
     private static final int SQUARE_SIZE = 20;
     private static final int MARGIN = 2;
+    private Backpack backpack;
+    private Player player;
 
-    public MapFrame(final Map map, final Backpack backpack) {
+    public MapFrame(final Map map, final Backpack backpack, final Player player) {
 	super("Brainstorm");
+	this.backpack = backpack;
+	this.player = player;
 
 	final MapComponent mapComponent = new MapComponent(map);
 	JPanel contentPane = new JPanel(new BorderLayout());
@@ -91,8 +95,8 @@ public class MapFrame extends JFrame
 
     private class BackpackClicker implements MouseListener {
 	public void mouseClicked (MouseEvent e) {
-    	    System.out.println("HEY THERE");
-	    JFrame ayy = new JFrame("ayy lmao");
+	    JFrame ayy = new BackpackFrame(backpack, player);
+	    ayy.setSize(new Dimension(200, 200));
 	    ayy.setVisible(true);
 	    ayy.toFront();
 	    ayy.setLocationRelativeTo(null);

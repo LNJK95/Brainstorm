@@ -41,8 +41,6 @@ public class BackpackComponent extends JComponent implements GameListener
 	switch(gear) {
 	    case BRAINS:
 		return Color.PINK;
-	    case BOMB:
-		return Color.RED;
 	    case HEADPHONES:
 	    case PANCAKES:
 	    case LOST_ARM:

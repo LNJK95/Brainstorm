@@ -18,11 +18,10 @@ public class Player
     private int gearAttack;
     private int gearDefence;
 
-    private Gear headgear;
-    private Gear footgear;
-    private Gear armour;
-    private Gear hand_1;
-    private Gear hand_2;
+    private Gear headgear = Gear.NOTHING;
+    private Gear footgear = Gear.NOTHING;
+    private Gear armour = Gear.NOTHING;
+    private Gear weapon = Gear.NOTHING;
 
     public Player() {
 	level = 1;
@@ -36,9 +35,9 @@ public class Player
     }
 
     public void gearUpdate() {
-	int gearSpeed = headgear.getSpeed() + footgear.getSpeed() + armour.getSpeed() + hand_1.getSpeed() + hand_2.getSpeed();
-	int gearAttack = headgear.getAttack() + footgear.getAttack() + armour.getAttack() + hand_1.getAttack() + hand_2.getAttack();
-	int gearDefence = headgear.getDefence() + footgear.getDefence() + armour.getDefence() + hand_1.getDefence() + hand_2.getDefence();
+	int gearSpeed = headgear.getSpeed() + footgear.getSpeed() + armour.getSpeed() + weapon.getSpeed();
+	int gearAttack = headgear.getAttack() + footgear.getAttack() + armour.getAttack() + weapon.getAttack();
+	int gearDefence = headgear.getDefence() + footgear.getDefence() + armour.getDefence() + weapon.getDefence();
 
 	this.gearSpeed = gearSpeed;
 	this.gearAttack = gearAttack;
@@ -52,19 +51,12 @@ public class Player
 	    footgear = gear;
 	} else if (gear.getType().equals("Armour")) {
 	    armour = gear;
-	} else if (gear.getType().equals("1-hand")) {
-	    if (hand_1 == null) {
-		hand_1 = gear;
-	    } else if (hand_2 == null) {
-		hand_2 = gear;
-	    } else {
-		hand_1 = gear;
-	    }
-	} else if (gear.getType().equals("2-hand")) {
-	    hand_1 = gear;
-	    hand_2 = Gear.HAND;
+	} else if (gear.getType().equals("Weapon")) {
+	    weapon = gear;
 	}
 	gearUpdate();
+
+	System.out.println(headgear + " " + footgear + " " + armour + " " + weapon + " ;)");
     }
 
     public void deEquip(Gear gear) {
@@ -74,15 +66,8 @@ public class Player
 	    footgear = null;
 	} else if (gear.getType().equals("Armour")) {
 	    armour = null;
-	} else if (gear.getType().equals("1-hand")) {
-	    if (hand_1 == gear) {
-		hand_1 = null;
-	    } else if (hand_2 == gear) {
-		hand_2 = null;
-	    }
-	} else if (gear.getType().equals("2-hand")) {
-	    hand_1 = null;
-	    hand_2 = null;
+	} else if (gear.getType().equals("Weapon")) {
+	    weapon = null;
 	}
 	gearUpdate();
     }
@@ -130,6 +115,13 @@ public class Player
 	    xp -= 10*level;
 	    level++;
 	    System.out.println("level up");
+	}
+    }
+
+    public void heal(int heal) {
+	health += heal;
+	if (health > maxHealth) {
+	    health = maxHealth;
 	}
     }
 
