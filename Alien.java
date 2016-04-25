@@ -12,6 +12,6 @@ public class Alien extends Enemy
     }
 
     public String toString() {
-	return "Alien" + "\n" + "Health: " + cHealth + "\n";
+	return "Alien";
     }
 }

@@ -2,5 +2,5 @@ package brainstorm;
 
 public enum SquareType
 {
-    OUTSIDE, GRASS, HOUSE
+    OUTSIDE, GROUND, HOUSE, DOOR
 }

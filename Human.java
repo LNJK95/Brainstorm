@@ -12,6 +12,6 @@ public class Human extends Enemy
     }
 
     public String toString() {
-	return "Human" + "\n" + "Health: " + cHealth + "\n";
+	return "Human";
     }
 }

@@ -12,6 +12,6 @@ public class Mermaid extends Enemy
     }
 
     public String toString() {
-	return "Mermaid" + "\n" + "Health: " + cHealth + "\n";
+	return "Mermaid";
     }
 }

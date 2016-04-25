@@ -12,6 +12,6 @@ public class Vampire extends Enemy
     }
 
     public String toString() {
-	return "Vampire" + "\n" + "Health: " + cHealth + "\n";
+	return "Vampire";
     }
 }

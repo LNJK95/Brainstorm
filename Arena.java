@@ -49,6 +49,10 @@ public class Arena
 	Random rnd = new Random();
 	int chance = rnd.nextInt(100);
 	System.out.println(chance + " " + playerSpeed + " " + enemySpeed);
+	if (player.getAlly().toString() != "Dumbfucks") {
+	    player.setState("map");
+	    player.setAlly(new Dumbfuck(0));
+	}
 	if (playerSpeed < enemySpeed) {
 	    if (chance <= 25) {
 		System.out.println(chance + "/25");
@@ -98,6 +102,18 @@ public class Arena
 	}
 	keepFighting();
 	notifyListeners();
+    }
+
+    public void flirt()  {
+	//;)
+	for (Gear gear : player.getEquippedGear()) {
+	    if (gear.getFlirt() != null) {
+		if (enemy.toString() == gear.getFlirt()) {
+		    player.setAlly(enemy);
+		    win = true;
+		}
+	    }
+	}
     }
 
     public void enemyAttack() {

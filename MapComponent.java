@@ -1,7 +1,11 @@
 package brainstorm;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class MapComponent extends JComponent implements GameListener
 {
@@ -9,10 +13,25 @@ public class MapComponent extends JComponent implements GameListener
     private final static int SQUARE_SIZE = 30;
     private final static int MARGIN = 2;
 
+    private BufferedImage house;
+    private BufferedImage playa;
+
     public MapComponent(Map map) {
 	this.map = map;
 	this.setPreferredSize(getPreferredSize());
+
+	try {
+	    house = ImageIO.read(new File("/home/ellka591/TDDD78/Brainstorm/src/brainstorm/house2.jpg"));
+	} catch (IOException e) {
+	    System.out.println("hittar ej bild ju");
+	}
+	try {
+	    playa = ImageIO.read(new File("/home/ellka591/TDDD78/Brainstorm/src/brainstorm/protagonist.png"));
+	} catch (IOException e) {
+	    System.out.println("hittar ej bild ju");
+	}
     }
+
 
     @Override protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
@@ -25,18 +44,21 @@ public class MapComponent extends JComponent implements GameListener
 						SQUARE_SIZE, SQUARE_SIZE);
 		g2d.setPaint(mapColor(map.getSquareType(r, c)));
 		g2d.fill(rectangle);
+
+		if (map.getSquareType(r,c) == SquareType.HOUSE) {
+		    g2d.drawImage(house, c * SQUARE_SIZE + c * MARGIN, r * SQUARE_SIZE + r * MARGIN, null);
+		}
 	    }
 	}
 
-	/*String player = "\tU+1F617";
-	g2d.setPaint(Color.MAGENTA);
-	g2d.drawString(player, map.getPlayerX()*SQUARE_SIZE + map.getPlayerX()*MARGIN,
-		       map.getPlayerY()*SQUARE_SIZE + map.getPlayerY()*MARGIN);*/
-	Shape player = new Rectangle(map.getPlayerX()*SQUARE_SIZE + map.getPlayerX()*MARGIN,
+	/*Shape player = new Rectangle(map.getPlayerX()*SQUARE_SIZE + map.getPlayerX()*MARGIN,
 				     map.getPlayerY()*SQUARE_SIZE + map.getPlayerY()*MARGIN,
 				     SQUARE_SIZE, SQUARE_SIZE);
 	g2d.setPaint(Color.GREEN);
 	g2d.fill(player);
+	*/
+
+	g2d.drawImage(playa, map.getPlayerX() * SQUARE_SIZE + map.getPlayerX() * MARGIN, map.getPlayerY() * SQUARE_SIZE + map.getPlayerY() * MARGIN, null);
 
 	for (Enemy enemy : map.getEnemies()) {
 	    Shape thisEnemy = new Rectangle(enemy.getEnemyX()*SQUARE_SIZE + enemy.getEnemyX()*MARGIN,
@@ -62,14 +84,31 @@ public class MapComponent extends JComponent implements GameListener
 
     private Paint mapColor(SquareType type) {
 	switch(type) {
-	    case GRASS: return Color.DARK_GRAY;
-	    case HOUSE: return Color.RED;
+	    case GROUND: return Color.DARK_GRAY;
+	    case HOUSE: return Color.WHITE;
+	    case DOOR: return Color.BLUE;
 	    case OUTSIDE:
 	    default: return Color.BLACK;
 	}
     }
 
+
     public void hasChanged() {
 	repaint();
+    }
+
+    private class ImageComponent extends JComponent {
+   	BufferedImage img;
+
+   	public ImageComponent(BufferedImage img) {
+   	    this.img = img;
+   	}
+
+   	@Override public void paintComponent(Graphics g) {
+   	    super.paintComponent(g);
+   	    final Graphics2D g2d = (Graphics2D) g;
+
+   	    g2d.drawImage(img, 0, 0, null);
+   	}
     }
 }

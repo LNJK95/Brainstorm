@@ -19,7 +19,7 @@ public class GameFrame extends JFrame
 	map = new Map(15, 20, player, backpack);
 	arena = new Arena(player);
 	mapFrame = new MapFrame(map, backpack, player);
-	arenaFrame = new ArenaFrame(arena, backpack);
+	arenaFrame = new ArenaFrame(arena, backpack, player);
 	state = "map";
 
 	//mapFrame.setVisible(true);

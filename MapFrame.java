@@ -1,11 +1,15 @@
 package brainstorm;
 
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class MapFrame extends JFrame
 {
@@ -38,11 +42,11 @@ public class MapFrame extends JFrame
 	backpackPane.setMinimumSize(backpackPane.getPreferredSize());
 	backpackPane.setMaximumSize(backpackPane.getPreferredSize());
 
-
 	backpackComponent.addMouseListener(new BackpackClicker());
 
 	map.addListener(mapComponent);
 	backpack.addListener(backpackComponent);
+
 
 	//this.setVisible(true);
 	this.pack();
@@ -96,7 +100,6 @@ public class MapFrame extends JFrame
     private class BackpackClicker implements MouseListener {
 	public void mouseClicked (MouseEvent e) {
 	    JFrame ayy = new BackpackFrame(backpack, player);
-	    ayy.setSize(new Dimension(200, 200));
 	    ayy.setVisible(true);
 	    ayy.toFront();
 	    ayy.setLocationRelativeTo(null);
@@ -106,4 +109,6 @@ public class MapFrame extends JFrame
     	public void mouseReleased(MouseEvent e) {}
     	public void mouseExited(MouseEvent e) {}
     }
+
+
 }

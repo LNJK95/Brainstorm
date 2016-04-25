@@ -44,24 +44,46 @@ public class Map
 		    mapSquares[r][c] = SquareType.OUTSIDE;
 		}
 		else {
-		    mapSquares[r][c] = SquareType.GRASS;
+		    mapSquares[r][c] = SquareType.GROUND;
 		}
 	    }
 	}
+	houseCreator();
 	randomGearCoords();
-	randomEnemy();
+	randomEnemy(5);
+    }
+
+    public void houseCreator() {
+	for (int r = 0; r < height; r++) {
+	    for (int c = 0; c < width; c++) {
+		if (r % 4 == 1 && c % 4 == 1) {
+		    mapSquares[r+2][c+2] = SquareType.HOUSE;
+		}
+	    }
+	}
     }
 
     public void resetMap() {
+	for (int r = 0; r < height + BORDER*2; r++) {
+	    for (int c = 0; c < width + BORDER*2; c++) {
+		if( r < BORDER || c < BORDER || r >= height + BORDER || c >= width + BORDER) {
+		    mapSquares[r][c] = SquareType.OUTSIDE;
+		}
+		else {
+		    mapSquares[r][c] = SquareType.GROUND;
+		}
+	    }
+	}
 	enemies.clear();
-	randomEnemy();
+	houseCreator();
+	randomEnemy(5);
+	randomGearCoords();
     }
 
-    public void randomEnemy() {
-	while (enemies.size() < 5) {
+    public void randomEnemy(int quantity) {
+	while (enemies.size() < quantity) {
 	    int enemyLevel = rnd.nextInt(player.getLevel())+1;
 	    Enemy enemy = createEnemy(enemyLevel);
-	    //new Human(rnd.nextInt(player.getLevel())+1);
 	    enemy.setCoords(rnd.nextInt(height), rnd.nextInt(width));
 	    checkEnemy(enemy);
 	    enemies.add(enemy);
@@ -76,7 +98,7 @@ public class Map
 		newRandomCoords(enemy);
 	    }
 	}
-	if (getSquareType(enemy.getEnemyY(), enemy.getEnemyX()) != SquareType.GRASS) {
+	if (getSquareType(enemy.getEnemyY(), enemy.getEnemyX()) != SquareType.GROUND) {
 	    newRandomCoords(enemy);
 	    System.out.println("not grass");
 	}
@@ -94,7 +116,7 @@ public class Map
 
     public void defeatedEnemy(Enemy enemy) {
 	enemies.remove(enemy);
-	randomEnemy();
+	randomEnemy(5);
 	//remove enemy (collidedEnemy) from enemies
     }
 
@@ -111,20 +133,38 @@ public class Map
 		break;
 	    case 5:
 	    case 6:
-		enemyType = new Werewolf(enemyLevel);
-		break;
+		//enemyType = new Werewolf(enemyLevel);
+		//break;
 	    case 7:
 	    case 8:
 		enemyType = new Mermaid(enemyLevel);
 		break;
 	    case 9:
 	    case 10:
-		enemyType = new Alien(enemyLevel);
-		break;
+		//enemyType = new Alien(enemyLevel);
+		//break;
 	    default:
 		enemyType = new Human(enemyLevel);
 	}
 	return enemyType;
+    }
+
+    public void enterHouse() {
+	for (int r = 0; r < height + BORDER*2; r++) {
+	    for (int c = 0; c < width + BORDER*2; c++) {
+		if( r < BORDER || c < BORDER || r >= height + BORDER || c >= width + BORDER) {
+		    mapSquares[r][c] = SquareType.OUTSIDE;
+		}
+		else {
+		    mapSquares[r][c] = SquareType.GROUND;
+		}
+	    }
+	}
+	mapSquares[BORDER][(width+BORDER)/2] = SquareType.DOOR;
+	enemies.clear();
+	randomEnemy(rnd.nextInt(5));
+	randomGearCoords();
+	notifyListeners();
     }
 
     /* newMap() som gör om kartan in case of emergency lmao*/
@@ -173,8 +213,16 @@ public class Map
 
     private boolean hasCollision() {
 	boolean boo = true;
-	if ( (getSquareType(playerY, playerX) == SquareType.GRASS)) {
+	if ( (getSquareType(playerY, playerX) == SquareType.GROUND)) {
 	    boo = false;
+	}
+	if (getSquareType(playerY, playerX) == SquareType.HOUSE){
+	    boo = true;
+	    enterHouse();
+	}
+	if (getSquareType(playerY, playerX) == SquareType.DOOR) {
+	    boo = false;
+	    resetMap();
 	}
 	for (Enemy enemy : enemies) {
 	    if (enemy.getEnemyY() == playerY && enemy.getEnemyX() == playerX) {
@@ -237,7 +285,7 @@ public class Map
 		randomGearCoords();
 	    }
 	}
-	if (getSquareType(gearY, gearX) != SquareType.GRASS) {
+	if (getSquareType(gearY, gearX) != SquareType.GROUND) {
 	    randomGearCoords();
 	}
 	if (gearX == playerX && gearY == playerY) {

@@ -20,26 +20,35 @@ public class BackpackFrame extends JFrame
 
 	this.setLayout(new BorderLayout());
 
-	JPanel up = new JPanel();
-	JPanel down = new JPanel();
+	JPanel left = new JPanel();
+	JPanel right = new JPanel();
 	JPanel brainz = new JPanel();
 	JPanel gear = new JPanel();
 	this.add(brainz, BorderLayout.LINE_START);
-	up.setLayout(new BorderLayout());
+	left.setLayout(new BorderLayout());
 	this.add(gear, BorderLayout.LINE_END);
-	down.setLayout(new BorderLayout());
-	gear.add(up, BorderLayout.PAGE_START);
-	gear.add(down, BorderLayout.PAGE_END);
+	right.setLayout(new BorderLayout());
+	gear.add(left, BorderLayout.PAGE_START);
+	gear.add(right, BorderLayout.PAGE_END);
 
-	JPanel headgear = new JPanel();
-	JPanel footgear = new JPanel();
-	JPanel armour = new JPanel();
-	JPanel weapons = new JPanel();
+	JPanel headgear = new JPanel(new FlowLayout());
+	JPanel footgear = new JPanel(new FlowLayout());
+	JPanel armour = new JPanel(new FlowLayout());
+	JPanel weapons = new JPanel(new FlowLayout());
 
-	up.add(headgear, BorderLayout.LINE_START);
-	up.add(footgear, BorderLayout.LINE_END);
-	down.add(armour, BorderLayout.LINE_START);
-	down.add(weapons, BorderLayout.LINE_END);
+	headgear.setPreferredSize(new Dimension(150,200));
+	footgear.setPreferredSize(new Dimension(150,200));
+	armour.setPreferredSize(new Dimension(150,200));
+	weapons.setPreferredSize(new Dimension(150,200));
+	brainz.setPreferredSize(new Dimension(100,100));
+	gear.setPreferredSize(new Dimension(320, 420));
+	this.setSize(new Dimension(420, 420));
+	this.setResizable(false);
+
+	left.add(headgear, BorderLayout.PAGE_START);
+	left.add(footgear, BorderLayout.PAGE_END);
+	right.add(armour, BorderLayout.PAGE_START);
+	right.add(weapons, BorderLayout.PAGE_END);
 
 	headgear.setBorder(BorderFactory.createLineBorder(Color.black));
 	footgear.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -79,7 +88,7 @@ public class BackpackFrame extends JFrame
 		    } else if (backpack.getGear(r, c).getType() == "Heal" || backpack.getGear(r, c).getType() == "Attack") {
 			JCheckBoxMenuItem abc = new JCheckBoxMenuItem(backpack.getGear(r, c).toString());
 			brainz.add(abc);
-			abc.addItemListener(new User(backpack.getGear(r, c), r, c, this, abc));
+			abc.addItemListener(new User(backpack.getGear(r, c), r, c));
 		    }
 		}
 	    }
@@ -105,15 +114,11 @@ public class BackpackFrame extends JFrame
 	private Gear gear;
 	private int y;
 	private int x;
-	private BackpackFrame bpf;
-	private JCheckBoxMenuItem cbmi;
 
-	public User(Gear gear, int y, int x, BackpackFrame bpf, JCheckBoxMenuItem cbmi) {
+	public User(Gear gear, int y, int x) {
 	    this.gear = gear;
 	    this.y = y;
 	    this.x = x;
-	    this.bpf = bpf;
-	    this.cbmi = cbmi;
 	}
 
 	public void itemStateChanged(ItemEvent e) {
@@ -126,9 +131,6 @@ public class BackpackFrame extends JFrame
 			System.out.println(player.getHealth());
 		    }
 		}
-	    }
-	    if (e.getStateChange() == ItemEvent.DESELECTED) {
-		bpf.remove(cbmi);
 	    }
 	}
     }

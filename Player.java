@@ -1,5 +1,8 @@
 package brainstorm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Player
 {
     private static final int START_SPEED = 10;
@@ -23,6 +26,10 @@ public class Player
     private Gear armour = Gear.NOTHING;
     private Gear weapon = Gear.NOTHING;
 
+    private Enemy ally = new Dumbfuck(0);
+
+    private List<Gear> equippedGear = new ArrayList<Gear>();
+
     public Player() {
 	level = 1;
         state = "map";
@@ -32,12 +39,29 @@ public class Player
 	speed = 15+level;
 	attack = 10+level;
 	xp = 0;
+	addEquip();
+    }
+
+    public void addEquip() {
+	equippedGear.add(headgear);
+	equippedGear.add(footgear);
+	equippedGear.add(armour);
+	equippedGear.add(weapon);
+    }
+
+    public void updateEquip() {
+	equippedGear.clear();
+	addEquip();
+    }
+
+    public List<Gear> getEquippedGear() {
+	return equippedGear;
     }
 
     public void gearUpdate() {
 	int gearSpeed = headgear.getSpeed() + footgear.getSpeed() + armour.getSpeed() + weapon.getSpeed();
-	int gearAttack = headgear.getAttack() + footgear.getAttack() + armour.getAttack() + weapon.getAttack();
-	int gearDefence = headgear.getDefence() + footgear.getDefence() + armour.getDefence() + weapon.getDefence();
+	int gearAttack = headgear.getAttack() + footgear.getAttack() + armour.getAttack() + weapon.getAttack() + ally.getAttack();
+	int gearDefence = headgear.getDefence() + footgear.getDefence() + armour.getDefence() + weapon.getDefence() + ally.getDefence();
 
 	this.gearSpeed = gearSpeed;
 	this.gearAttack = gearAttack;
@@ -55,6 +79,7 @@ public class Player
 	    weapon = gear;
 	}
 	gearUpdate();
+	updateEquip();
 
 	System.out.println(headgear + " " + footgear + " " + armour + " " + weapon + " ;)");
     }
@@ -70,6 +95,7 @@ public class Player
 	    weapon = null;
 	}
 	gearUpdate();
+	updateEquip();
     }
 
     public int getMaxHealth() {
@@ -133,10 +159,19 @@ public class Player
 	this.xp = xp;
     }
 
+    public Enemy getAlly() {
+	return ally;
+    }
+
+    public void setAlly(final Enemy ally) {
+	this.ally = ally;
+	gearUpdate();
+    }
+
     public String toString() {
-	return "Health: " + health + "\n"
-		+ "Attack: " + attack + "\n"
-		+ "Defence: " + defence + "\n"
-		+ "Speed: " + speed + "\n";
+	return "Health: " + getHealth() + "\n"
+		+ "Attack: " + getAttack() + "\n"
+		+ "Defence: " + getDefence() + "\n"
+		+ "Speed: " + getSpeed() + "\n";
     }
 }

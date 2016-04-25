@@ -12,6 +12,6 @@ public class Werewolf extends Enemy
     }
 
     public String toString() {
-	return "Werewolf" + "\n" + "Health: " + cHealth + "\n";
+	return "Werewolf";
     }
 }
