@@ -4,31 +4,35 @@ package brainstorm;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+
+/** MapFrame contains a MapComponent and a BackpackComponent.
+ * Clicking the BackpackComponent will open a BackpackFrame.*/
 
 public class MapFrame extends JFrame
 {
-
-    private static final int SQUARE_SIZE = 20;
-    private static final int MARGIN = 2;
     private Backpack backpack;
     private Player player;
 
     public MapFrame(final Map map, final Backpack backpack, final Player player) {
-	super("Brainstorm");
+	super("Brainstorm: Map");
 	this.backpack = backpack;
 	this.player = player;
 
 	final MapComponent mapComponent = new MapComponent(map);
+	StatComponent statComponent = new StatComponent(player);
+
 	JPanel contentPane = new JPanel(new BorderLayout());
 	JPanel backpackPane = new JPanel(new BorderLayout());
+	JPanel statPane = new JPanel(new BorderLayout());
 
-	JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, contentPane, backpackPane);
+	JSplitPane slicePane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, backpackPane, statPane);
+	JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, contentPane, slicePane);
 	this.add(splitPane);
 
-	//this.setLayout(new BorderLayout());
 	BackpackComponent backpackComponent = new BackpackComponent(backpack);
+
 	contentPane.add(mapComponent, BorderLayout.LINE_START);
 	backpackPane.add(backpackComponent, BorderLayout.PAGE_START);
 
@@ -38,13 +42,17 @@ public class MapFrame extends JFrame
 	backpackPane.setMinimumSize(backpackPane.getPreferredSize());
 	backpackPane.setMaximumSize(backpackPane.getPreferredSize());
 
+	statPane.setMinimumSize(new Dimension(backpackPane.getWidth(), 200));
 
 	backpackComponent.addMouseListener(new BackpackClicker());
 
+	statPane.add(statComponent, BorderLayout.PAGE_START);
+
+
 	map.addListener(mapComponent);
 	backpack.addListener(backpackComponent);
+	player.addListener(statComponent);
 
-	//this.setVisible(true);
 	this.pack();
 	this.setResizable(false);
 	this.setLocationRelativeTo(null);
@@ -93,17 +101,15 @@ public class MapFrame extends JFrame
 	act.put("quit", new QuitAction());
     }
 
-    private class BackpackClicker implements MouseListener {
+    private class BackpackClicker extends MouseAdapter
+    {
 	public void mouseClicked (MouseEvent e) {
-	    JFrame ayy = new BackpackFrame(backpack, player);
-	    ayy.setSize(new Dimension(200, 200));
-	    ayy.setVisible(true);
-	    ayy.toFront();
-	    ayy.setLocationRelativeTo(null);
+	    BackpackFrame backpackFrame = new BackpackFrame(backpack, player);
+	    backpackFrame.setVisible(true);
+	    backpackFrame.toFront();
+	    backpackFrame.setLocationRelativeTo(null);
     	}
-    	public void mousePressed(MouseEvent e) {}
-    	public void mouseEntered(MouseEvent e){}
-    	public void mouseReleased(MouseEvent e) {}
-    	public void mouseExited(MouseEvent e) {}
     }
+
+
 }

@@ -3,8 +3,16 @@ package brainstorm;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+/** GameFrame is the "controller". GameFrame
+ * switches between MapFrame and ArenaFrame
+ * whenever there is a change of "state".*/
+
 public class GameFrame extends JFrame
 {
+    //The amount of mapsquares on the map.
+    private static final int MAP_WIDTH = 20;
+    private static final int MAP_HEIGHT = 15;
+
     private MapFrame mapFrame;
     private ArenaFrame arenaFrame;
     private Map map;
@@ -12,38 +20,32 @@ public class GameFrame extends JFrame
     private final Player player = new Player();
     private final Timer clockTimer;
     private final Backpack backpack;
-    private String state;
+    private FrameState state;
 
     public GameFrame() {
 	backpack = new Backpack();
-	map = new Map(15, 20, player, backpack);
+	map = new Map(MAP_HEIGHT, MAP_WIDTH, player, backpack);
 	arena = new Arena(player);
 	mapFrame = new MapFrame(map, backpack, player);
-	arenaFrame = new ArenaFrame(arena, backpack);
-	state = "map";
-
-	//mapFrame.setVisible(true);
-	//arenaFrame.setVisible(true);
-	//mapFrame.toFront();
+	arenaFrame = new ArenaFrame(arena, backpack, player);
+	state = FrameState.MAP;
 
 	final Action doOneStep = new AbstractAction() {
 	    public void actionPerformed(ActionEvent e) {
-		if (player.getState() == "map" && state != "map") {
+		if (player.getState().equals(FrameState.MAP) && !state.equals(FrameState.MAP)) {
 		    arenaFrame.setVisible(false);
 		    mapFrame.setVisible(true);
-		    state = "map";
-		    //mapFrame.toFront();
+		    state = FrameState.MAP;
 		}
-		else if (player.getState() == "arena" && state != "arena") {
+		else if (player.getState().equals(FrameState.ARENA) && !state.equals(FrameState.ARENA)) {
 		    mapFrame.setVisible(false);
-		    state = "arena";
+		    state = FrameState.ARENA;
 		    if (map.getCollidedEnemy() != null) {
 			arena.setEnemy(map.getCollidedEnemy());
 		    }
 		    arenaFrame.setVisible(true);
-		    //arenaFrame.toFront();
 		}
-		else if (player.getState() == "arena" && state == "arena") {
+		else if (player.getState().equals(FrameState.ARENA) && state.equals(FrameState.ARENA)) {
 		    if (arena.isWin()) {
 			backpack.loot();
 			map.defeatedEnemy(map.getCollidedEnemy());
@@ -67,9 +69,5 @@ public class GameFrame extends JFrame
     public void startTimer() {
     	clockTimer.setCoalesce(true);
     	clockTimer.start();
-    }
-
-    public void stopTimer() {
-	clockTimer.stop();
     }
 }

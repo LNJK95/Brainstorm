@@ -1,12 +1,19 @@
 package brainstorm;
 
-public class Player
+import java.util.ArrayList;
+import java.util.Collection;
+
+/** Player is the playable character that you control. */
+
+public final class Player extends ListenedTo
 {
+    //Stats for the start of the game.
     private static final int START_SPEED = 10;
     private static final int START_ATTACK = 10;
     private static final int START_DEFENSE = 10;
+    private static final int START_HEALTH = 10;
 
-    private String state;
+    private FrameState state;
     private int health;
     private int speed;
     private int level;
@@ -23,25 +30,48 @@ public class Player
     private Gear armour = Gear.NOTHING;
     private Gear weapon = Gear.NOTHING;
 
+    private Enemy ally = new Nobody(0);
+
+    private Collection<Gear> equippedGear = new ArrayList<Gear>();
+
     public Player() {
 	level = 1;
-        state = "map";
-	maxHealth = 10+level;
+        state = FrameState.MAP;
+	maxHealth = START_HEALTH+level;
 	health = maxHealth;
-	defence = 10+level;
-	speed = 15+level;
-	attack = 10+level;
+	defence = START_DEFENSE+level;
+	speed = START_SPEED+level;
+	attack = START_ATTACK+level;
 	xp = 0;
+	addEquip();
+    }
+
+    public void addEquip() {
+	equippedGear.add(headgear);
+	equippedGear.add(footgear);
+	equippedGear.add(armour);
+	equippedGear.add(weapon);
+    }
+
+    public void updateEquip() {
+	equippedGear.clear();
+	addEquip();
+    }
+
+    public Iterable<Gear> getEquippedGear() {
+	return equippedGear;
     }
 
     public void gearUpdate() {
 	int gearSpeed = headgear.getSpeed() + footgear.getSpeed() + armour.getSpeed() + weapon.getSpeed();
-	int gearAttack = headgear.getAttack() + footgear.getAttack() + armour.getAttack() + weapon.getAttack();
-	int gearDefence = headgear.getDefence() + footgear.getDefence() + armour.getDefence() + weapon.getDefence();
+	int gearAttack = headgear.getAttack() + footgear.getAttack() + armour.getAttack() + weapon.getAttack() + ally.getAttack();
+	int gearDefence = headgear.getDefence() + footgear.getDefence() + armour.getDefence() + weapon.getDefence() + ally.getDefence();
 
 	this.gearSpeed = gearSpeed;
 	this.gearAttack = gearAttack;
 	this.gearDefence = gearDefence;
+
+	notifyListeners();
     }
 
     public void equip(Gear gear) {
@@ -55,19 +85,20 @@ public class Player
 	    weapon = gear;
 	}
 	gearUpdate();
-
-	System.out.println(headgear + " " + footgear + " " + armour + " " + weapon + " ;)");
+	updateEquip();
     }
 
     public void deEquip(Gear gear) {
-	if (gear.getType().equals("Headgear")) {
-	    headgear = null;
-	} else if (gear.getType().equals("Footgear")) {
-	    footgear = null;
-	} else if (gear.getType().equals("Armour")) {
-	    armour = null;
-	} else if (gear.getType().equals("Weapon")) {
-	    weapon = null;
+	if (gear.getType() != null) {
+	    if (gear.getType().equals("Headgear")) {
+		headgear = Gear.NOTHING;
+	    } else if (gear.getType().equals("Footgear")) {
+		footgear = Gear.NOTHING;
+	    } else if (gear.getType().equals("Armour")) {
+		armour = Gear.NOTHING;
+	    } else if (gear.getType().equals("Weapon")) {
+		weapon = Gear.NOTHING;
+	    }
 	}
 	gearUpdate();
     }
@@ -80,11 +111,11 @@ public class Player
 	this.health = health;
     }
 
-    public String getState() {
+    public FrameState getState() {
         return state;
     }
 
-    public void setState(final String state) {
+    public void setState(final FrameState state) {
 	this.state = state;
     }
 
@@ -110,12 +141,11 @@ public class Player
 
     public void addExperience(Enemy enemy) {
 	xp += enemy.getGivesXp();
-	System.out.println("adds xp");
 	if (xp >= 10*level) {
 	    xp -= 10*level;
 	    level++;
-	    System.out.println("level up");
 	}
+	notifyListeners();
     }
 
     public void heal(int heal) {
@@ -125,18 +155,13 @@ public class Player
 	}
     }
 
-    public int getXp() {
-	return xp;
+    public Enemy getAlly() {
+	return ally;
     }
 
-    public void setXp(final int xp) {
-	this.xp = xp;
+    public void setAlly(final Enemy ally) {
+	this.ally = ally;
+	gearUpdate();
     }
 
-    public String toString() {
-	return "Health: " + health + "\n"
-		+ "Attack: " + attack + "\n"
-		+ "Defence: " + defence + "\n"
-		+ "Speed: " + speed + "\n";
-    }
 }

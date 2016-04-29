@@ -1,34 +1,30 @@
 package brainstorm;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-public class Arena
+/** Arena contains all the playrules of the
+ * fighting sequences. */
+
+public class Arena extends ListenedTo
 {
+    /*These constants are the percentage chance to escape from a powerful foe.
+    *Low is for when you have lower speed than the enemy, medium for when
+    *you have the same and high for when you have higher speed.*/
+    private static final int LOW = 25;
+    private static final int MEDIUM = 50;
+    private static final int HIGH = 75;
+
     private Player player;
-    private Enemy enemy;
-    private List<GameListener> gameListeners = new ArrayList<GameListener>();
+    private Enemy enemy = null;
     private int enemySpeed;
     private int playerSpeed;
 
     private boolean win;
     private boolean death;
 
-
     public Arena(final Player player) {
 	this.player = player;
 	this.playerSpeed = player.getSpeed();
-    }
-
-    public void addListener(GameListener ml) {
-	gameListeners.add(ml);
-    }
-
-    private void notifyListeners() {
-    	for (GameListener ml : gameListeners) {
-    	    ml.hasChanged();
-    	}
     }
 
     public Player getPlayer() {
@@ -48,56 +44,58 @@ public class Arena
     public void flee() {
 	Random rnd = new Random();
 	int chance = rnd.nextInt(100);
-	System.out.println(chance + " " + playerSpeed + " " + enemySpeed);
+	if (!player.getAlly().toString().equals("Nobody")) {
+	    enemy.setStats();
+	    player.setState(FrameState.MAP);
+	    player.setAlly(new Nobody(0));
+	}
 	if (playerSpeed < enemySpeed) {
-	    if (chance <= 25) {
-		System.out.println(chance + "/25");
-		player.setState("map");
+	    if (chance <= LOW) {
+		enemy.setStats();
+		player.setState(FrameState.MAP);
 	    }
 	}
 	else if (playerSpeed == enemySpeed) {
-	    if (chance <= 50) {
-		System.out.println(chance + "/50");
-		player.setState("map");
+	    if (chance <= MEDIUM) {
+		enemy.setStats();
+		player.setState(FrameState.MAP);
 	    }
 	}
 	else if (playerSpeed > enemySpeed) {
-	    if (chance <= 75) {
-		System.out.println(chance + "/75");
-		player.setState("map");
+	    if (chance <= HIGH) {
+		enemy.setStats();
+		player.setState(FrameState.MAP);
 	    }
 	}
     }
 
-    //lägg till chans
-    //omorganisera
     public void fight() {
 	if (keepFighting()) {
 	    if (playerSpeed < enemySpeed) {
-		System.out.println("enemy attacks first");
 		enemyAttack();
 		if (keepFighting()) {
 		    playerAttack();
 		}
-		System.out.println("enemy: " + enemy.getHealth() + " player: " + player.getHealth());
-	    } else if (playerSpeed == enemySpeed) {
-		System.out.println("player attacks first");
+	    } else if (playerSpeed >= enemySpeed) {
 		playerAttack();
 		if (keepFighting()) {
 		    enemyAttack();
 		}
-		System.out.println("enemy: " + enemy.getHealth() + " player: " + player.getHealth());
-	    } else if (playerSpeed > enemySpeed) {
-		System.out.println("player attacks first");
-		playerAttack();
-		if (keepFighting()) {
-		    enemyAttack();
-		}
-		System.out.println("enemy: " + enemy.getHealth() + " player: " + player.getHealth());
 	    }
 	}
 	keepFighting();
 	notifyListeners();
+    }
+
+    public void flirt()  {
+	for (Gear gear : player.getEquippedGear()) {
+	    if (gear.getFlirt() != null) {
+		if (enemy.toString().equals(gear.getFlirt())) {
+		    player.setAlly(enemy);
+		    win = true;
+		}
+	    }
+	}
     }
 
     public void enemyAttack() {
@@ -117,28 +115,28 @@ public class Arena
     }
 
     public boolean keepFighting() {
-	boolean bool = true;
+	boolean keepFighting = true;
 	if (player.getHealth() <= 0) {
-	    bool = false;
+	    keepFighting = false;
 	    win = false;
 	    death = true;
 	}
 	else if (enemy.getHealth() <= 0) {
-	    bool = false;
+	    keepFighting = false;
 	    win = true;
 	    death = false;
 	}
-	return bool;
+	return keepFighting;
     }
 
     public void win() {
-	player.setState("map");
+	player.setState(FrameState.MAP);
 	player.addExperience(enemy);
 	win = false;
     }
 
     public void lose() {
-	player.setState("map");
+	player.setState(FrameState.MAP);
 	player.setHealth(player.getMaxHealth());
 	death = false;
     }
@@ -147,15 +145,7 @@ public class Arena
 	return win;
     }
 
-    public void setWin(final boolean win) {
-	this.win = win;
-    }
-
     public boolean isDeath() {
 	return death;
-    }
-
-    public void setDeath(final boolean death) {
-	this.death = death;
     }
 }

@@ -1,9 +1,13 @@
 package brainstorm;
 
+/** Enemy is the class all different types of
+ * enemies are based on. It contains basic methods
+ * that all different enemies have use for.*/
+
 public abstract class Enemy
 {
     protected int maxHealth;
-    protected int cHealth;
+    protected int health;
     protected int speed;
     protected int level;
     protected int defence;
@@ -12,18 +16,21 @@ public abstract class Enemy
     protected int enemyX;
     protected int givesXp;
 
-    public Enemy(int level) {
+    protected Enemy(int level) {
 	this.level = level;
 	givesXp = level*level;
     }
 
+    protected abstract void setStats();
 
-    public void setHealth(final int cHealth) {
-	this.cHealth = cHealth;
+    public abstract String toString();
+
+    public void setHealth(final int health) {
+	this.health = health;
     }
 
     public int getHealth() {
-	return cHealth;
+	return health;
     }
 
     public int getSpeed() {
@@ -44,14 +51,6 @@ public abstract class Enemy
 
     public int getEnemyX() {
 	return enemyX;
-    }
-
-    public void setEnemyY(final int enemyY) {
-	this.enemyY = enemyY;
-    }
-
-    public void setEnemyX(final int enemyX) {
-	this.enemyX = enemyX;
     }
 
     public void setCoords(int y, int x) {

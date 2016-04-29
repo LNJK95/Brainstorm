@@ -2,9 +2,15 @@ package brainstorm;
 
 import java.util.*;
 
-public class Map
+/** Map contains all the playrules for the map
+ *  and houses (a type of map). There is one piece of
+ *  Gear available on the map at all times.*/
+
+public class Map extends ListenedTo
 {
+    //The border around the map to keep the player from walking outside the map.
     private final static int BORDER = 2;
+
     private SquareType[][] mapSquares;
     private int height;
     private int width;
@@ -13,19 +19,19 @@ public class Map
     private int playerX;
     private int playerY;
 
+    private Gear gear = Gear.NOTHING;
     private int gearX;
     private int gearY;
-    private Gear gear;
 
     private Backpack backpack;
 
-    private Enemy collidedEnemy;
-    //private Enemy enemyType;
+    private Enemy collidedEnemy = new Nobody(0);
 
-    private List<GameListener> gameListeners = new ArrayList<GameListener>();
-    private List<Enemy> enemies = new ArrayList<Enemy>(5);
+    private Collection<Enemy> enemies = new ArrayList<Enemy>(5);
 
-    Random rnd = new Random();
+    private Random rnd = new Random();
+
+    private boolean inHouse = false;
 
     public Map(final int height, final int width, final Player player, final Backpack backpack) {
 	this.backpack = backpack;
@@ -34,7 +40,6 @@ public class Map
 	this.width = width;
 	playerX = width/2-BORDER;
 	playerY = height/2-BORDER;
-	gear = Gear.values()[rnd.nextInt(Gear.values().length)];
 
 	mapSquares = new SquareType[height + BORDER*2][width + BORDER*2];
 
@@ -44,24 +49,56 @@ public class Map
 		    mapSquares[r][c] = SquareType.OUTSIDE;
 		}
 		else {
-		    mapSquares[r][c] = SquareType.GRASS;
+		    mapSquares[r][c] = SquareType.GROUND;
 		}
 	    }
 	}
+
+	newRandomGear();
+	houseCreator();
 	randomGearCoords();
-	randomEnemy();
+	randomEnemy(5);
+    }
+
+    public void newRandomGear() {
+	gear = Gear.values()[rnd.nextInt(Gear.values().length)];
+
+	if (gear == Gear.NOTHING) {
+	    newRandomGear();
+	}
+    }
+
+    public void houseCreator() {
+	for (int r = 0; r < height; r++) {
+	    for (int c = 0; c < width; c++) {
+		if (r % 5 == 2 && c % 5 == 2) {
+		    mapSquares[r+BORDER][c+BORDER] = SquareType.HOUSE;
+		}
+	    }
+	}
     }
 
     public void resetMap() {
+	for (int r = 0; r < height + BORDER*2; r++) {
+	    for (int c = 0; c < width + BORDER*2; c++) {
+		if( r < BORDER || c < BORDER || r >= height + BORDER || c >= width + BORDER) {
+		    mapSquares[r][c] = SquareType.OUTSIDE;
+		}
+		else {
+		    mapSquares[r][c] = SquareType.GROUND;
+		}
+	    }
+	}
 	enemies.clear();
-	randomEnemy();
+	houseCreator();
+	randomEnemy(5);
+	randomGearCoords();
     }
 
-    public void randomEnemy() {
-	while (enemies.size() < 5) {
+    public void randomEnemy(int quantity) {
+	while (enemies.size() < quantity) {
 	    int enemyLevel = rnd.nextInt(player.getLevel())+1;
 	    Enemy enemy = createEnemy(enemyLevel);
-	    //new Human(rnd.nextInt(player.getLevel())+1);
 	    enemy.setCoords(rnd.nextInt(height), rnd.nextInt(width));
 	    checkEnemy(enemy);
 	    enemies.add(enemy);
@@ -69,33 +106,27 @@ public class Map
     }
 
     public void checkEnemy(Enemy enemy){
-	System.out.println("checks enemy coords");
 	for (Enemy e : enemies) {
 	    if (e.getEnemyX() == enemy.getEnemyX() && e.getEnemyY() == enemy.getEnemyY()) {
-		System.out.println("already enemy");
 		newRandomCoords(enemy);
 	    }
 	}
-	if (getSquareType(enemy.getEnemyY(), enemy.getEnemyX()) != SquareType.GRASS) {
+	if (getSquareType(enemy.getEnemyY(), enemy.getEnemyX()) != SquareType.GROUND ||
+	    (enemy.getEnemyX() == playerX && enemy.getEnemyY() == playerY)) {
 	    newRandomCoords(enemy);
-	    System.out.println("not grass");
-	}
-	if (enemy.getEnemyX() == playerX && enemy.getEnemyY() == playerY) {
-	    newRandomCoords(enemy);
-	    System.out.println("thats player dang it");
 	}
     }
 
     public void newRandomCoords(Enemy enemy) {
-	System.out.println("new enemy coords");
 	enemy.setCoords(rnd.nextInt(height), rnd.nextInt(width));
 	checkEnemy(enemy);
     }
 
     public void defeatedEnemy(Enemy enemy) {
 	enemies.remove(enemy);
-	randomEnemy();
-	//remove enemy (collidedEnemy) from enemies
+	if (!inHouse) {
+	    randomEnemy(5);
+	}
     }
 
     public Enemy createEnemy(int enemyLevel) {
@@ -127,17 +158,28 @@ public class Map
 	return enemyType;
     }
 
-    /* newMap() som gör om kartan in case of emergency lmao*/
-
-    private void notifyListeners() {
-	for (GameListener ml : gameListeners) {
-	    ml.hasChanged();
+    //maybe make smaller! :)
+    public void enterHouse() {
+	for (int r = 0; r < height + BORDER*2; r++) {
+	    for (int c = 0; c < width + BORDER*2; c++) {
+		if( r < BORDER || c < BORDER || r >= height + BORDER || c >= width + BORDER) {
+		    mapSquares[r][c] = SquareType.OUTSIDE;
+		}
+		else {
+		    mapSquares[r][c] = SquareType.GROUND;
+		}
+	    }
 	}
+	inHouse = true;
+	mapSquares[BORDER][(width+BORDER)/2] = SquareType.DOOR;
+	enemies.clear();
+	playerY = 1;
+	playerX = width/2-1;
+	randomEnemy(rnd.nextInt(5));
+	randomGearCoords();
+	notifyListeners();
     }
 
-    public void addListener(GameListener ml) {
-	gameListeners.add(ml);
-    }
 
     public void moveDown() {
 	playerY++;
@@ -172,14 +214,23 @@ public class Map
     }
 
     private boolean hasCollision() {
-	boolean boo = true;
-	if ( (getSquareType(playerY, playerX) == SquareType.GRASS)) {
-	    boo = false;
+	boolean collision = true;
+	if ( (getSquareType(playerY, playerX) == SquareType.GROUND)) {
+	    collision = false;
+	}
+	if (getSquareType(playerY, playerX) == SquareType.HOUSE){
+	    collision = false;
+	    enterHouse();
+	}
+	if (getSquareType(playerY, playerX) == SquareType.DOOR) {
+	    inHouse = false;
+	    collision = false;
+	    resetMap();
 	}
 	for (Enemy enemy : enemies) {
 	    if (enemy.getEnemyY() == playerY && enemy.getEnemyX() == playerX) {
-		boo = true;
-		player.setState("arena");
+		collision = true;
+		player.setState(FrameState.ARENA);
 		collidedEnemy = enemy;
 	    }
 	}
@@ -189,7 +240,7 @@ public class Map
 	    randomGearCoords();
 	    notifyListeners();
 	}
-	return boo;
+	return collision;
     }
 
     public SquareType getSquareType(int y, int x) {
@@ -212,7 +263,7 @@ public class Map
     	return playerY;
     }
 
-    public List<Enemy> getEnemies() {
+    public Iterable<Enemy> getEnemies() {
 	return enemies;
     }
 
@@ -237,12 +288,13 @@ public class Map
 		randomGearCoords();
 	    }
 	}
-	if (getSquareType(gearY, gearX) != SquareType.GRASS) {
+	if (getSquareType(gearY, gearX) != SquareType.GROUND || (gearX == playerX && gearY == playerY) ) {
 	    randomGearCoords();
 	}
-	if (gearX == playerX && gearY == playerY) {
-	    randomGearCoords();
-	}
+    }
+
+    public boolean isInHouse() {
+	return inHouse;
     }
 }
 

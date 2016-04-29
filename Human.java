@@ -1,17 +1,28 @@
 package brainstorm;
 
+/** Human is a type of enemy.*/
+
 public class Human extends Enemy
 {
-   public Human(int level) {
-       super(level);
-       maxHealth = 10 + level;
-       defence = 8 + level;
-       attack = 12 + level;
-       speed = 12 + level;
-       cHealth = maxHealth;
+    private final static int BASE_HEALTH = 10;
+    private final static int BASE_DEFENCE = 8;
+    private final static int BASE_ATTACK = 12;
+    private final static int BASE_SPEED = 12;
+
+    public Human(int level) {
+        super(level);
+        setStats();
     }
 
-    public String toString() {
-	return "Human" + "\n" + "Health: " + cHealth + "\n";
+    public void setStats() {
+        maxHealth = BASE_HEALTH + level;
+        defence = BASE_DEFENCE + level;
+        attack = BASE_ATTACK + level;
+        speed = BASE_SPEED + level;
+        health = maxHealth;
+    }
+
+    @Override public String toString() {
+	return "Human";
     }
 }

@@ -1,16 +1,16 @@
 package brainstorm;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-public class Backpack
+/** Backpack holds all the Gear the Player
+ * acquires.*/
+
+public class Backpack extends ListenedTo
 {
+    //The width and height of the backpack.
     private static final int BACKPACK_SIZE = 4;
 
     private Gear[][] gears;
-
-    private List<GameListener> gameListeners = new ArrayList<GameListener>();
 
     public Backpack() {
 	gears = new Gear[BACKPACK_SIZE][BACKPACK_SIZE];
@@ -32,13 +32,13 @@ public class Backpack
     }
 
     public void addToBackpack(Gear gear) {
-	boolean bool = true;
+	boolean canAdd = true;
 	    for (int r = 0; r < BACKPACK_SIZE; r++) {
 		for (int c = 0; c < BACKPACK_SIZE; c++) {
 		    if (gears[r][c] == Gear.NOTHING) {
-			if (bool) {
+			if (canAdd) {
 			    gears[r][c] = gear;
-			    bool = false;
+			    canAdd = false;
 			}
 		    }
 		}
@@ -46,11 +46,10 @@ public class Backpack
 	notifyListeners();
     }
 
-
     public void loot() {
 	Random rnd = new Random();
 	addToBackpack(Gear.BRAINS);
-	addToBackpack(Gear.values()[rnd.nextInt(Gear.values().length)]);
+	addToBackpack(Gear.values()[rnd.nextInt(Gear.values().length -1)]);
 	notifyListeners();
     }
 
@@ -59,17 +58,7 @@ public class Backpack
 	notifyListeners();
     }
 
-    public void addListener(GameListener ml) {
-	gameListeners.add(ml);
-    }
-
-    private void notifyListeners() {
-	for (GameListener ml : gameListeners) {
-	    ml.hasChanged();
-	}
-    }
-
-    public int getSize() {
+    public int getBackpackSize() {
 	return BACKPACK_SIZE;
     }
 
