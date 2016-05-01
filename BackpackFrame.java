@@ -20,8 +20,18 @@ public class BackpackFrame extends JFrame
     private Player player;
     private Backpack backpack;
 
-    //This constructor needs to be long because of graphics
-    @SuppressWarnings("OverlyLongMethod") public BackpackFrame(Backpack backpack, final Player player) {
+    private JPanel headgear;
+    private JPanel footgear;
+    private JPanel armour;
+    private JPanel weapons;
+    private JPanel brains;
+
+    private ButtonGroup head;
+    private ButtonGroup foot;
+    private ButtonGroup armoury;
+    private ButtonGroup weaponry;
+
+    public BackpackFrame(Backpack backpack, final Player player) {
 	super("Choose your gear");
 	this.player = player;
 	this.backpack = backpack;
@@ -30,7 +40,7 @@ public class BackpackFrame extends JFrame
 
 	JPanel left = new JPanel();
 	JPanel right = new JPanel();
-	JPanel brains = new JPanel();
+	brains = new JPanel();
 	JPanel gear = new JPanel();
 	this.add(brains, BorderLayout.LINE_START);
 	this.add(gear, BorderLayout.LINE_END);
@@ -39,10 +49,10 @@ public class BackpackFrame extends JFrame
 	gear.add(left, BorderLayout.PAGE_START);
 	gear.add(right, BorderLayout.PAGE_END);
 
-	JPanel headgear = new JPanel(new FlowLayout());
-	JPanel footgear = new JPanel(new FlowLayout());
-	JPanel armour = new JPanel(new FlowLayout());
-	JPanel weapons = new JPanel(new FlowLayout());
+	headgear = new JPanel(new FlowLayout());
+	footgear = new JPanel(new FlowLayout());
+	armour = new JPanel(new FlowLayout());
+	weapons = new JPanel(new FlowLayout());
 
 	headgear.setPreferredSize(new Dimension(150,200));
 	footgear.setPreferredSize(new Dimension(150,200));
@@ -64,16 +74,22 @@ public class BackpackFrame extends JFrame
 	weapons.setBorder(BorderFactory.createLineBorder(Color.black));
 	brains.setBorder(BorderFactory.createLineBorder(Color.black));
 
-	ButtonGroup head = new ButtonGroup();
-	ButtonGroup foot = new ButtonGroup();
-	ButtonGroup armoury = new ButtonGroup();
-	ButtonGroup weaponry = new ButtonGroup();
+	head = new ButtonGroup();
+	foot = new ButtonGroup();
+	armoury = new ButtonGroup();
+	weaponry = new ButtonGroup();
 
 	for (Gear g : player.getEquippedGear()) {
 	    player.deEquip(g);
 	}
 	player.updateEquip();
 
+	addButtons();
+
+	this.pack();
+    }
+
+    private void addButtons() {
 	for (int r = 0; r < backpack.getBackpackSize(); r++) {
 	    for (int c = 0; c < backpack.getBackpackSize(); c++) {
 		if (backpack.getGear(r, c) != Gear.NOTHING) {
@@ -105,7 +121,6 @@ public class BackpackFrame extends JFrame
 		}
 	    }
 	}
-	this.pack();
     }
 
     private final class Equipper implements ActionListener

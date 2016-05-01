@@ -1,5 +1,12 @@
 package brainstorm;
 
+import brainstorm.enemies.Alien;
+import brainstorm.enemies.Human;
+import brainstorm.enemies.Mermaid;
+import brainstorm.enemies.Nobody;
+import brainstorm.enemies.Vampire;
+import brainstorm.enemies.Werewolf;
+
 import java.util.*;
 
 /** Map contains all the playrules for the map
@@ -89,6 +96,7 @@ public class Map extends ListenedTo
 		}
 	    }
 	}
+	inHouse = false;
 	enemies.clear();
 	houseCreator();
 	randomEnemy(5);

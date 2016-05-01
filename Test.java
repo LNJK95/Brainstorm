@@ -8,7 +8,6 @@ public final class Test
 
     public static void main(String[] args) {
 	//This is the launcher of the game, the result is not ignored.
-	//noinspection ResultOfObjectAllocationIgnored
 	new GameFrame();
     }
 }

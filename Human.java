@@ -1,4 +1,6 @@
-package brainstorm;
+package brainstorm.enemies;
+
+import brainstorm.Enemy;
 
 /** Human is a type of enemy.*/
 

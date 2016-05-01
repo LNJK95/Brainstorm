@@ -1,4 +1,6 @@
-package brainstorm;
+package brainstorm.enemies;
+
+import brainstorm.Enemy;
 
 /** Werewolf is a type of enemy.*/
 

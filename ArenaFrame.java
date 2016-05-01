@@ -73,6 +73,7 @@ public class ArenaFrame extends JFrame
 
 	this.pack();
 	this.setLocationRelativeTo(null);
+	this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     private class BackpackClicker extends MouseAdapter

@@ -1,5 +1,7 @@
 package brainstorm;
 
+import brainstorm.enemies.Nobody;
+
 import java.util.Random;
 
 /** Arena contains all the playrules of the
@@ -88,13 +90,19 @@ public class Arena extends ListenedTo
     }
 
     public void flirt()  {
+	boolean isFlirt = false;
 	for (Gear gear : player.getEquippedGear()) {
 	    if (gear.getFlirt() != null) {
 		if (enemy.toString().equals(gear.getFlirt())) {
 		    player.setAlly(enemy);
 		    win = true;
+		    isFlirt = true;
 		}
 	    }
+	}
+	if (!isFlirt) {
+	    enemyAttack();
+	    keepFighting();
 	}
     }
 
@@ -148,4 +156,5 @@ public class Arena extends ListenedTo
     public boolean isDeath() {
 	return death;
     }
+
 }

@@ -56,6 +56,7 @@ public class MapFrame extends JFrame
 	this.pack();
 	this.setResizable(false);
 	this.setLocationRelativeTo(null);
+	this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 	class DownAction extends AbstractAction {
 	    @Override public void actionPerformed(final ActionEvent e) {

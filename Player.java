@@ -1,5 +1,7 @@
 package brainstorm;
 
+import brainstorm.enemies.Nobody;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
